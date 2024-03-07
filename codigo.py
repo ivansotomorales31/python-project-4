@@ -93,7 +93,7 @@ def menu_administrador():
         elif opc == "3":
             print("Visualizar vehículos")
             for i in inventario_vehiculos:
-                print(i)
+                print(inventario_vehiculos[i])
             print("Estos son los vehiculos")
 
 menu_administrador()
