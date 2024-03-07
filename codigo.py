@@ -1,66 +1,117 @@
-Num_Vehiculo = []
+inventario_vehiculos = []
 Registro_Cedulas = []
-opc = 0
 
-while opc != "1":
-    print()
-    print("-----Menu-----")
-    print("[1] Gestion inventario Vehiculos")
-    print("[2] Gestion de clientes")
-    print("[3] Visualizar vehiculos ")
-    opc = input("Seleccione una opcion: ")
+def agregar_vehiculo(marca, año, modelo, cilindraje, precio_alquiler, precio_vehiculo, placa, cantidad):
+    if placa not in inventario_vehiculos:
+        inventario_vehiculos[placa] = {'marca': marca,
+                                        'año': año,
+                                        'modelo': modelo,
+                                        'cilindraje': cilindraje,
+                                        'precio_alquiler': precio_alquiler,
+                                        'precio_vehiculo': precio_vehiculo,
+                                        'cantidad_disponible': cantidad,
+                                        'habilitado': True}
+        print("Vehiculo agregado exitosamente")
 
-    if opc == "1":
-        print("----Gestion inventario vehiculos---")
-        print("[1] Agregar vehiculos")
-        print("[2] Inhabilitar vehiculos")
+def reservar_vehiculo(placa, cantidad):
+    if placa in inventario_vehiculos:
+        if inventario_vehiculos[placa]['habilitado']:
+            if inventario_vehiculos[placa]['cantidad_disponible'] >= cantidad:
+                inventario_vehiculos[placa]['cantidad_disponible'] -= cantidad
+                print("Reserva realizada correctamente.")
+            else:
+                print("No hay suficientes vehiculos ")
+        else:
+            print("El vehiculo esta inhabilitado.")
+    else:
+        print("No existe ningun vehiculo con esa placa.")
+
+def inhabilitar_vehiculo(placa):
+    if placa in inventario_vehiculos:
+        inventario_vehiculos[placa]['habilitado'] = False
+        print("Vehiculo inhabilitado correctamente.")
+    else:
+        print("No se encontro ningun vehiculo con esa placa.")
+
+def menu_administrador():
+    opc = ""
+    while opc != "3":
+        print()
+        print("-----Menu-----")
+        print("[1] Gestion inventario Vehiculos")
+        print("[2] Gestion de clientes")
+        print("[3] Visualizar vehiculos ")
         opc = input("Seleccione una opcion: ")
 
         if opc == "1":
-            print()
-            print("Agrega el vehiculo que deseas")
-            Marca = input("Ingrese la marca del vehiculo: ")
-            Año = input("Ingrese el año del vehiculo: ")
-            Modelo = input("Ingrese el modelo del vehiculo: ")
-            cilindraje = input("Ingrese el cilindraje del modelo: ")
-            Precio_alquiler = float(input("Ingrese el precio de al alquiler: "))
-            Precio_auto = float(input("Ingrese el precio del auto: "))
-            placa = input("Ingrese el numero de placa")
+            print("----Gestion inventario vehiculos---")
+            print("[1] Agregar vehiculos")
+            print("[2] Inhabilitar vehiculos")
+            opc_inventario = input("Seleccione una opcion: ")
 
-            Num_Vehiculo = [Marca, Año, Modelo, cilindraje, Precio_alquiler, Precio_auto]
-            print(Num_Vehiculo)
-            print("Vehiculo agregado con exito ")
+            if opc_inventario == "1":
+                print()
+                print("Agrega el vehiculo que deseas")
+                Marca = input("Ingrese la marca del vehiculo: ")
+                Año = input("Ingrese el año del vehiculo: ")
+                Modelo = input("Ingrese el modelo del vehiculo: ")
+                cilindraje = input("Ingrese el cilindraje del modelo: ")
+                Precio_alquiler = float(input("Ingrese el precio de al alquiler: "))
+                Precio_auto = float(input("Ingrese el precio del auto: "))
+                placa = input("Ingrese el numero de placa")
+                cantidad = float(input("Ingrese la cantidad de vehiculos disponibles"))
+                agregar_vehiculo(Marca, Año, Modelo, cilindraje, Precio_alquiler, Precio_auto, placa, cantidad)
+            elif opc_inventario == "2":
+                placa = input("Ingrese la placa del vehiculo a inhabilitar: ")
+                inhabilitar_vehiculo(placa)
 
         elif opc == "2":
-            print("Inhabilitar vehiculos")
+            print("Gestion de clientes")
             print("----Menu-----")
-            print("[1] Vehiculo dañado ")
-            print("[2] Vehiculo reservado")
+            print("[1] Ingresar como invitado")
+            print("[2] Ingresar como cliente registrado")
+            cli_opc = input("Seleccione una opcion para la gestion de clientes: ")
 
-    elif opc == "2":
-        print("Gestion de clientes")
-        print("----Menu-----")
-        print("[1] Ingresar como invitado")
-        print("[2] Ingresar como cliente registrado")
-        cli_opc = input("Seleccione una opción para la gestión de clientes: ")
-
-        if cli_opc == "1":
-            print("Cliente invitado")
-        
-        elif cli_opc == "2":
-            print("Iniciar sesion")
-            Nombre = input("Ingrese su nombre:")
-            NumCedula = input("Ingrese su numero de cedula:")
-
-            if NumCedula in Registro_Cedulas:
-                print("Bienvenido de nuevo",Nombre)
+            if cli_opc == "1":
+                print("Cliente invitado")
             
-            else:
-                print("Cedula no encontrada, porfavor registrese")
-                Registro_Cedulas.append(NumCedula)
+            elif cli_opc == "2":
+                print("Iniciar sesion")
                 Nombre = input("Ingrese su nombre:")
-                Telefono = input("Ingrese su numero de telefono:")
-                print("Se registro correctamente ")
+                NumCedula = input("Ingrese su numero de cedula:")
 
-    elif opc == "3":
-        print("Visualizar vehículos")
+                if NumCedula in Registro_Cedulas:
+                    print("Bienvenido de nuevo",Nombre)
+                
+                else:
+                    print("Cedula no encontrada, porfavor registrese")
+                    Registro_Cedulas.append(NumCedula)
+                    Nombre = input("Ingrese su nombre:")
+                    Telefono = input("Ingrese su numero de telefono:")
+                    print("Se registro correctamente ")
+
+        elif opc == "3":
+            print("Visualizar vehículos")
+            reservas_activas = { "reserva1": {"cliente": "Juan", "monto": 100}, "reserva2": {"cliente": "Maria", "monto": 150}, "reserva3": {"cliente": "Pedro", "monto": 200} }
+
+            for reserva, datos in reservas_activas.items():
+                print(f"Reserva: {reserva} - Cliente: {datos['cliente']} - Monto: ${datos['monto']}")
+
+            reserva_cancelar = "reserva2"
+
+            if reserva_cancelar in reservas_activas: 
+                monto_reserva = reservas_activas[reserva_cancelar]["monto"] 
+                penalidad = monto_reserva * 0.10
+
+                print(f"La penalidad por cancelar la reserva es de ${penalidad}")
+                confirmacion = input("¿Desea cancelar la reserva? (s/n): ")
+
+                if confirmacion.lower() == "s":
+                    del reservas_activas[reserva_cancelar]
+                    print(f"La reserva {reserva_cancelar} ha sido cancelada")
+                else:
+                    print("La reserva se mantendrá activa")
+            else: 
+                print("La reserva ingresada no existe")
+
+menu_administrador()
