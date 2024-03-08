@@ -1,4 +1,4 @@
-inventario_vehiculos = []
+inventario_vehiculos = {}
 Registro_Cedulas = []
 
 def agregar_vehiculo(marca, año, modelo, cilindraje, precio_alquiler, precio_vehiculo, placa, cantidad):
