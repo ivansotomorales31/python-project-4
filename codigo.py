@@ -1,5 +1,7 @@
 ##avance 3
 ##proyecto programacion 
+
+
 import json
 import os
 
@@ -24,7 +26,8 @@ archivo_Registro_Cedulas.close()
 archivo_Registro_Cedulas=open("Archivo_Registro_Cedulas.txt","r")
 guardar_archivo_Registro_Cedulas=archivo_Registro_Cedulas.read()
 archivo_Registro_Cedulas.close()
-Registro_Cedulas=guardar_archivo_Registro_Cedulas
+print(guardar_archivo_Registro_Cedulas)
+Registro_Cedulas=eval(guardar_archivo_Registro_Cedulas)
 
 
 archivo_reserva=open("Archivo_reserva.txt","a")
@@ -128,12 +131,19 @@ if len(guardar_archivo_sede_Pérez_Zeledón)==0:
 else:
     sede_Pérez_Zeledón=eval(guardar_archivo_sede_Pérez_Zeledón)
 
+    
+
 
 sedes_Lista=[sede_San_José,sede_Alajuela,sede_Guanacaste,sede_Limón,sede_Puntarenas,sede_Pérez_Zeledón]
 
+
 def Definir_Sede():
     import time
+
+
+    
     print ("Horas Actuales \n",time.strftime("%H:%M:%S") )
+    
     print ("",time.strftime("%I:%M:%S") )
     tiempo_actual=int(time.strftime("%H"))
     print("----------------------")
@@ -231,6 +241,8 @@ def menu_administrador(Sede,tiempo_actual,archivo):
     
     opc = ""
     while opc != "5":
+
+        
         Hora_Salida_Calcu=int(time.strftime("%H"))
         print()
         print("Hora de entrada:",time.strftime("%I:%M:%S"))
