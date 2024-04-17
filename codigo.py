@@ -337,8 +337,6 @@ def menu_administrador(Sede,tiempo_actual,archivo):
                 Hora_Salida=time.strftime("%H:%M:%S")
                 Sede[0].append(Hora_Salida)
 
-
-                print(type(archivo))
                 archivo=open(archivo,'w')
                 archivo.write(str(Sede))
                 archivo.close()
