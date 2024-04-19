@@ -26,8 +26,10 @@ archivo_Registro_Cedulas.close()
 archivo_Registro_Cedulas=open("Archivo_Registro_Cedulas.txt","r")
 guardar_archivo_Registro_Cedulas=archivo_Registro_Cedulas.read()
 archivo_Registro_Cedulas.close()
-print(guardar_archivo_Registro_Cedulas)
-Registro_Cedulas=eval(guardar_archivo_Registro_Cedulas)
+if len(guardar_archivo_Registro_Cedulas)==0:
+    print("")
+else:
+    Registro_Cedulas=eval(guardar_archivo_Registro_Cedulas)
 
 
 archivo_reserva=open("Archivo_reserva.txt","a")
