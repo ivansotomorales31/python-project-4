@@ -1,15 +1,23 @@
 ##avance 3
 ##proyecto programacion 
 
-
 import json
 import os
 
 inventario_vehiculos = {}
 Registro_Cedulas = []
-reserva = []
+reservas_activas = []
+vehiculos = [
+    {"marca": "Toyota", "modelo": "Yaris", "disponibilidad": 4, "precio_alquiler": 50},
+    {"marca": "Toyota", "modelo": "Corolla", "disponibilidad": 0, "precio_alquiler": 60},
+    {"marca": "Toyota", "modelo": "Rav4", "disponibilidad": 1, "precio_alquiler": 70},
+    {"marca": "Honda", "modelo": "Civic", "disponibilidad": 2, "precio_alquiler": 55},
+    {"marca": "Honda", "modelo": "Accord", "disponibilidad": 3, "precio_alquiler": 65}
+]
+vehiculos+=inventario_vehiculos
+inventario_vehiculos=vehiculos
 
-
+#####creacion y guardado de informacion de archivos
 archivo_inventario_vehiculos=open("Archivo_inventario_vehiculos.txt","a")
 archivo_inventario_vehiculos.close()
 archivo_inventario_vehiculos=open("Archivo_inventario_vehiculos.txt","r")
@@ -31,15 +39,16 @@ if len(guardar_archivo_Registro_Cedulas)==0:
 else:
     Registro_Cedulas=eval(guardar_archivo_Registro_Cedulas)
 
-
 archivo_reserva=open("Archivo_reserva.txt","a")
 archivo_reserva.close()
 archivo_reserva=open("Archivo_reserva.txt","r")
 guardar_archivo_reserva=archivo_reserva.read()
 archivo_reserva.close()
-
-reserva=guardar_archivo_reserva
-
+if len(guardar_archivo_reserva)==0:
+    print("")
+else:
+    reservas_activas=eval(guardar_archivo_reserva)
+##############################################
 
 
 sede_San_José=[["Registro de Tiempos"],["Registro De autos"] ]
@@ -121,7 +130,7 @@ else:
     sede_Puntarenas=eval(guardar_archivo_sede_Puntarenas)
 
 
-
+##-----------------------------------------------------
 archivo_sede_Pérez_Zeledón=open("archivo_sede_Pérez_Zeledón.txt","a")
 archivo_sede_Pérez_Zeledón.close()
 
@@ -134,14 +143,13 @@ else:
     sede_Pérez_Zeledón=eval(guardar_archivo_sede_Pérez_Zeledón)
 
     
-
+#####creacion de archivos
 
 sedes_Lista=[sede_San_José,sede_Alajuela,sede_Guanacaste,sede_Limón,sede_Puntarenas,sede_Pérez_Zeledón]
 
 
 def Definir_Sede():
     import time
-
 
     
     print ("Horas Actuales \n",time.strftime("%H:%M:%S") )
@@ -229,6 +237,66 @@ def reservar_vehiculo(placa, cantidad):
     else:
         print("No existe ningun vehiculo con esa placa.")
 
+########################################################################
+
+def mostrar_marcas_modelos():
+    marcas = set(vehiculo["marca"] for vehiculo in vehiculos)
+    print("Marcas de vehiculos disponibles:")
+    for marca in marcas:
+        print(f"{marca}:")
+        modelos_disponibles = [vehiculo for vehiculo in vehiculos if vehiculo["marca"] == marca and vehiculo["disponibilidad"] > 0]
+        if modelos_disponibles:
+            for vehiculo in modelos_disponibles:
+                print(f"- {vehiculo['modelo']}: {vehiculo['disponibilidad']} disponibles")
+        else:
+            print(f"Disculpe, no hay modelos disponibles para la marca {marca}")
+
+def gestion_reservas():
+    mostrar_marcas_modelos()
+    print("\nSeleccione una marca para ver los modelos disponibles:")
+    marca_seleccionada = input().capitalize()
+    
+    modelos_disponibles = [vehiculo for vehiculo in vehiculos if vehiculo["marca"] == marca_seleccionada and vehiculo["disponibilidad"] > 0]
+    if not modelos_disponibles:
+        print(f"Disculpe, no hay modelos disponibles para la marca {marca_seleccionada}")
+        return
+    
+    print(f"Modelos disponibles de {marca_seleccionada}:")
+    for vehiculo in modelos_disponibles:
+        print(f"- {vehiculo['modelo']}: {vehiculo['disponibilidad']} disponibles")
+    
+    print("\nSeleccione un modelo para reservar:")
+    modelo_seleccionado = input().capitalize()
+    
+    vehiculo_seleccionado = next((vehiculo for vehiculo in modelos_disponibles if vehiculo["modelo"] == modelo_seleccionado), None)
+    if vehiculo_seleccionado:
+        print("Ingrese el dia y la hora de retiro:")
+        dia_hora_retiro = input()
+        print("Ingrese el dia y la hora de entrega :")
+        dia_hora_entrega = input()
+        
+        if dia_hora_retiro and dia_hora_entrega:
+            reserva = {
+                "marca": vehiculo_seleccionado["marca"],
+                "modelo": vehiculo_seleccionado["modelo"],
+                "dia_hora_retiro": dia_hora_retiro,
+                "dia_hora_entrega": dia_hora_entrega,
+                "precio_alquiler": vehiculo_seleccionado["precio_alquiler"]
+            }
+            reservas_activas.append(reserva)
+
+            archivo_reserva=open("Archivo_reserva.txt",'w')
+            archivo_reserva.write(str(reservas_activas))
+            archivo_reserva.close()
+
+            vehiculo_seleccionado["disponibilidad"] -= 1
+            print("Reserva realizada con exito.")
+        else:
+            print("Error.")
+    else:
+        print(f"El modelo {modelo_seleccionado} no esta disponible.")
+
+#########################################################################
 def inhabilitar_vehiculo(placa):
     if placa in inventario_vehiculos:
         inventario_vehiculos[placa]['habilitado'] = False
@@ -244,7 +312,6 @@ def menu_administrador(Sede,tiempo_actual,archivo):
     opc = ""
     while opc != "5":
 
-        
         Hora_Salida_Calcu=int(time.strftime("%H"))
         print()
         print("Hora de entrada:",time.strftime("%I:%M:%S"))
@@ -252,7 +319,7 @@ def menu_administrador(Sede,tiempo_actual,archivo):
         print("[1] Gestion inventario Vehiculos")
         print("[2] Gestion de clientes")
         print("[3] Visualizar vehiculos ")
-        print("[4] Gestión de sedes")
+        print("[4] Gestion de sedes")
         opc = input("Seleccione una opcion: ")
 
         if opc == "1":
@@ -276,12 +343,12 @@ def menu_administrador(Sede,tiempo_actual,archivo):
             elif opc_inventario == "2":
                 placa = input("Ingrese la placa del vehiculo a inhabilitar: ")
                 inhabilitar_vehiculo(placa)
-
-
+####################
+####################guardar informacion de lista en archivo **inventario_vehiculos**
             archivo_inventario_vehiculos=open("Archivo_inventario_vehiculos.txt","w")
             archivo_inventario_vehiculos.write(str(inventario_vehiculos))
             archivo_inventario_vehiculos.close()
-
+################################################################
 
         elif opc == "2":
             print("Gestion de clientes")
@@ -295,7 +362,13 @@ def menu_administrador(Sede,tiempo_actual,archivo):
                 print("Seleccione una opcion")
                 print("[1] Ver un listado de marcas de vehiculo")
                 print("[2] Ver un listado de reservas")
-                reserva = input("Seleccione que desear ver")
+                opcion_invitado = input("Seleccione que desear ver")
+                if opcion_invitado == "1":
+                    gestion_reservas()
+                    
+                if opcion_invitado == "2":
+                    for reser in reservas_activas:
+                        print(reser)
 
             elif cli_opc == "2":
                 print("Iniciar sesion")
@@ -309,6 +382,12 @@ def menu_administrador(Sede,tiempo_actual,archivo):
                     print("[2] Ver un listado de reservas")
                     reserva = input("Seleccione la opcion que deseas ver")
                     print("")
+                    if reserva == "1":
+                        gestion_reservas()
+                    
+                    if reserva == "2":
+                        for reser in reservas_activas:
+                            print(reser)
                 
                 else:
                     print("Cedula no encontrada, porfavor registrese")
@@ -316,16 +395,16 @@ def menu_administrador(Sede,tiempo_actual,archivo):
                     Nombre = input("Ingrese su nombre:")
                     Telefono = input("Ingrese su numero de telefono:")
                     print("Se registro correctamente ")
-
-
+################################
+###########################guardar informacion en archivos de cedula
             archivo_Registro_Cedulas=open("archivo_Registro_Cedulas.txt","w")
             json.dump(Registro_Cedulas, archivo_Registro_Cedulas)
             archivo_Registro_Cedulas.close()
-
+##########################################################
 
 
         elif opc == "3":
-            print("Visualizar vehículos")
+            print("Visualizar vehiculos")
             i= Sede[1]
             for e in i:
                 print(e)
@@ -339,48 +418,49 @@ def menu_administrador(Sede,tiempo_actual,archivo):
                 Hora_Salida=time.strftime("%H:%M:%S")
                 Sede[0].append(Hora_Salida)
 
+##########################guardar informacion sobre cambio de sede hora de salida
                 archivo=open(archivo,'w')
                 archivo.write(str(Sede))
                 archivo.close()
                 break
-
+################################################################            
             if eleccion_Sede==2:
                 print(Sede[0])
             
         else:
-            print("Opción inválida")
+            print("Opcion invalida")
  
         if Sede==sedes_Lista[2] and (tiempo_actual+Hora_Salida_Calcu>23 or tiempo_actual+Hora_Salida_Calcu==23):
             Hora_Salida=time.strftime("%H:%M:%S")
             Sede[0].append(Hora_Salida)
-
+##########################guardar informacion sobre cambio de sede hora de salida
             archivo=open(archivo,'w')
             archivo.write(str(Sede))
             archivo.close()
             break
-
+##---------------------------------------------------------------------------
         elif Sede==sedes_Lista[3] and (tiempo_actual+Hora_Salida_Calcu>22 or tiempo_actual+Hora_Salida_Calcu==22):
             Hora_Salida=time.strftime("%H:%M:%S")
             Sede[0].append(Hora_Salida)
-
+##########################guardar informacion sobre cambio de sede hora de salida
             archivo=open(archivo,'w')
             archivo.write(str(Sede))
             archivo.close()
             break
-
+##---------------------------------------------------------------------------
         elif Sede==sedes_Lista[4] and (tiempo_actual+Hora_Salida_Calcu>22 or tiempo_actual+Hora_Salida_Calcu==22):
             Hora_Salida=time.strftime("%H:%M:%S")
             Sede[0].append(Hora_Salida)
-
+##########################guardar informacion sobre cambio de sede hora de salida
             archivo=open(archivo,'w')
             archivo.write(str(Sede))
             archivo.close()
             break
-
+##---------------------------------------------------------------------------
         elif Sede==sedes_Lista[5] and (tiempo_actual+Hora_Salida_Calcu>22 or tiempo_actual+Hora_Salida_Calcu==22):
             Hora_Salida=time.strftime("%H:%M:%S")
             Sede[0].append(Hora_Salida)
-
+##########################guardar informacion sobre cambio de sede hora de salida
             archivo=open(archivo,'w')
             archivo.write(str(Sede))
             archivo.close()
@@ -389,3 +469,4 @@ def menu_administrador(Sede,tiempo_actual,archivo):
 
 while True:
     Definir_Sede()
+
