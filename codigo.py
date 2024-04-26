@@ -14,8 +14,6 @@ vehiculos = [
     {"marca": "Honda", "modelo": "Civic", "disponibilidad": 2, "precio_alquiler": 55},
     {"marca": "Honda", "modelo": "Accord", "disponibilidad": 3, "precio_alquiler": 65}
 ]
-vehiculos+=inventario_vehiculos
-inventario_vehiculos=vehiculos
 
 #####creacion y guardado de informacion de archivos
 archivo_inventario_vehiculos=open("Archivo_inventario_vehiculos.txt","a")
